@@ -12,6 +12,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import ThankYou from "./pages/ThankYou";
 import ProfilePage from "./pages/ProfilePage";
+import Sitemap from "./pages/Sitemap";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/sitemap.xml" element={<Sitemap />} /> 
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
