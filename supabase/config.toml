@@ -1,0 +1,14 @@
+
+project_id = "imjacusvndfmbsiypyuv"
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.create-checkout-session]
+verify_jwt = true
+
+[functions.cancel-subscription]
+verify_jwt = true
+
+[functions.extract-property-images]
+verify_jwt = false
