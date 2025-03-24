@@ -288,7 +288,7 @@ export default function Index() {
       <header className="relative h-[500px] md:h-[600px] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://media.istockphoto.com/photos/terrace-houses-picture-id523917343?k=6&m=523917343&s=612x612&w=0&h=K2zBO0xQXXbqPj8OikFMrlIdSJ5X-vYDWPLp89tX_y4="
+            src="https://res.cloudinary.com/dd51hlrev/image/upload/fl_preserve_transparency/v1742820806/terrace-houses-picture-id523917343_eshjdz.jpg?_s=public-apps"
             alt="Traditional UK Terraced Houses"
             className="w-full h-full object-cover opacity-60"
             
