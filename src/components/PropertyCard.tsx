@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -74,11 +73,20 @@ export function PropertyCard({
           <div className="relative aspect-[16/9] overflow-hidden">
             <img
               src={imageUrl}
+              alt={`${title} - Property in ${location}`}
               loading="lazy"
-              alt={title}
+              decoding="async"
               className={`w-full h-full object-cover transition-transform duration-300 ${
                 isHovered ? "scale-110" : "scale-100"
               }`}
+              width={800}
+              height={450}
+              srcSet={`${imageUrl} 400w,
+                      ${imageUrl} 800w,
+                      ${imageUrl} 1200w`}
+              sizes="(max-width: 768px) 100vw,
+                     (max-width: 1200px) 50vw,
+                     33vw"
             />
             {bmvPercentage && (
               <Badge
