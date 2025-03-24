@@ -74,6 +74,7 @@ export function PropertyCard({
           <div className="relative aspect-[16/9] overflow-hidden">
             <img
               src={imageUrl}
+              loading="lazy"
               alt={title}
               className={`w-full h-full object-cover transition-transform duration-300 ${
                 isHovered ? "scale-110" : "scale-100"

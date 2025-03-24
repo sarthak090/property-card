@@ -1,7 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
-import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { BadgePoundSterling, User, PlusCircle, Clock, BarChart3, FileText, ArrowRight, RefreshCcw, Heart, Bell, UserCircle, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -13,8 +11,37 @@ import {
   PopoverTrigger 
 } from "@/components/ui/popover";
 
-// Lazy load PropertyCard component
+// Add TypeScript declarations
+declare global {
+  interface Window {
+    dataLayer: any[];
+    hj: Function;
+    _hjSettings: {
+      hjid: number;
+      hjsv: number;
+    };
+  }
+}
+
+// Lazy load components
+const SearchBar = lazy(() => import("@/components/SearchBar").then(module => ({ default: module.SearchBar })));
 const PropertyCard = lazy(() => import("@/components/PropertyCard").then(module => ({ default: module.PropertyCard })));
+
+// Lazy load icons
+const Icons = {
+  BadgePoundSterling: lazy(() => import("lucide-react").then(module => ({ default: module.BadgePoundSterling }))),
+  User: lazy(() => import("lucide-react").then(module => ({ default: module.User }))),
+  PlusCircle: lazy(() => import("lucide-react").then(module => ({ default: module.PlusCircle }))),
+  Clock: lazy(() => import("lucide-react").then(module => ({ default: module.Clock }))),
+  BarChart3: lazy(() => import("lucide-react").then(module => ({ default: module.BarChart3 }))),
+  FileText: lazy(() => import("lucide-react").then(module => ({ default: module.FileText }))),
+  ArrowRight: lazy(() => import("lucide-react").then(module => ({ default: module.ArrowRight }))),
+  RefreshCcw: lazy(() => import("lucide-react").then(module => ({ default: module.RefreshCcw }))),
+  Heart: lazy(() => import("lucide-react").then(module => ({ default: module.Heart }))),
+  Bell: lazy(() => import("lucide-react").then(module => ({ default: module.Bell }))),
+  UserCircle: lazy(() => import("lucide-react").then(module => ({ default: module.UserCircle }))),
+  LogOut: lazy(() => import("lucide-react").then(module => ({ default: module.LogOut })))
+};
 
 async function fetchLatestProperties() {
   console.log('Initiating property fetch...');
@@ -84,6 +111,50 @@ export default function Index() {
   const [user, setUser] = useState<any>(null);
   const [userDisplayName, setUserDisplayName] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
+
+  // Load third-party scripts
+  useEffect(() => {
+    // Load Google Tag Manager
+    const loadGTM = () => {
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=GTM-5WCMDDR5';
+      document.head.appendChild(script);
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag(...args: any[]) {
+        window.dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'GTM-5WCMDDR5');
+    };
+
+    // Load Hotjar
+    const loadHotjar = () => {
+      const script = document.createElement('script');
+      script.async = true;
+      script.defer = true;
+      script.innerHTML = `
+        (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:3812345,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;r.defer=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      `;
+      document.head.appendChild(script);
+    };
+
+    // Load scripts after a delay to prioritize core content
+    const timer = setTimeout(() => {
+      loadGTM();
+      loadHotjar();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -196,7 +267,9 @@ export default function Index() {
             onClick={() => refetch()}
             className="bg-[#9b87f5] hover:bg-[#9b87f5]/90 inline-flex items-center gap-2"
           >
-            <RefreshCcw className="w-4 h-4" />
+            <Suspense fallback={<div className="w-4 h-4" />}>
+              <Icons.RefreshCcw className="w-4 h-4" />
+            </Suspense>
             Try Again
           </Button>
         </div>
@@ -218,7 +291,7 @@ export default function Index() {
             src="https://media.istockphoto.com/photos/terrace-houses-picture-id523917343?k=6&m=523917343&s=612x612&w=0&h=K2zBO0xQXXbqPj8OikFMrlIdSJ5X-vYDWPLp89tX_y4="
             alt="Traditional UK Terraced Houses"
             className="w-full h-full object-cover opacity-60"
-            loading="lazy"
+            
             decoding="async"
             fetchPriority="high"
             width={612}
@@ -239,7 +312,9 @@ export default function Index() {
                     <PopoverTrigger asChild>
                       <button className="flex items-center gap-2 hover:text-[#9b87f5] transition-colors">
                         <span className="text-sm text-gray-300">Hello, {userDisplayName}</span>
-                        <UserCircle className="h-5 w-5" />
+                        <Suspense fallback={<div className="w-5 h-5" />}>
+                          <Icons.UserCircle className="h-5 w-5" />
+                        </Suspense>
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="w-64 bg-[#1A1F2C] border border-gray-700 text-white">
@@ -255,7 +330,9 @@ export default function Index() {
                             size="sm"
                             className="w-full text-xs justify-start"
                           >
-                            <UserCircle className="w-4 h-4 mr-2" />
+                            <Suspense fallback={<div className="w-4 h-4 mr-2" />}>
+                              <Icons.UserCircle className="w-4 h-4 mr-2" />
+                            </Suspense>
                             More Details
                           </Button>
                           
@@ -265,7 +342,9 @@ export default function Index() {
                             size="sm"
                             className="w-full text-xs justify-start"
                           >
-                            <LogOut className="w-4 h-4 mr-2" />
+                            <Suspense fallback={<div className="w-4 h-4 mr-2" />}>
+                              <Icons.LogOut className="w-4 h-4 mr-2" />
+                            </Suspense>
                             Log Out
                           </Button>
                         </div>
@@ -376,7 +455,9 @@ export default function Index() {
                   onClick={() => refetch()}
                   className="bg-[#9b87f5] hover:bg-[#9b87f5]/90 inline-flex items-center gap-2"
                 >
-                  <RefreshCcw className="w-4 h-4" />
+                  <Suspense fallback={<div className="w-4 h-4" />}>
+                    <Icons.RefreshCcw className="w-4 h-4" />
+                  </Suspense>
                   Retry Loading Properties
                 </Button>
               </div>
@@ -403,25 +484,33 @@ export default function Index() {
                 <ul className="space-y-4 text-left">
                   <li className="flex items-center">
                     <div className="w-8 h-8 bg-[#9b87f5]/20 rounded-full flex items-center justify-center mr-3">
-                      <BadgePoundSterling className="w-4 h-4 text-[#9b87f5]" />
+                      <Suspense fallback={<div className="w-4 h-4" />}>
+                        <Icons.BadgePoundSterling className="w-4 h-4 text-[#9b87f5]" />
+                      </Suspense>
                     </div>
                     <span>Access to all BMV properties</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-8 h-8 bg-[#9b87f5]/20 rounded-full flex items-center justify-center mr-3">
-                      <Clock className="w-4 h-4 text-[#9b87f5]" />
+                      <Suspense fallback={<div className="w-4 h-4" />}>
+                        <Icons.Clock className="w-4 h-4 text-[#9b87f5]" />
+                      </Suspense>
                     </div>
                     <span>Monthly rolling - no long-term commitment</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-8 h-8 bg-[#9b87f5]/20 rounded-full flex items-center justify-center mr-3">
-                      <Heart className="w-4 h-4 text-[#9b87f5]" />
+                      <Suspense fallback={<div className="w-4 h-4" />}>
+                        <Icons.Heart className="w-4 h-4 text-[#9b87f5]" />
+                      </Suspense>
                     </div>
                     <span>Flexibility to cancel anytime</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-8 h-8 bg-[#9b87f5]/20 rounded-full flex items-center justify-center mr-3">
-                      <Bell className="w-4 h-4 text-[#9b87f5]" />
+                      <Suspense fallback={<div className="w-4 h-4" />}>
+                        <Icons.Bell className="w-4 h-4 text-[#9b87f5]" />
+                      </Suspense>
                     </div>
                     <span>Real-time property alerts</span>
                   </li>
@@ -433,7 +522,9 @@ export default function Index() {
                 className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-base md:text-lg py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {user ? "Start Free Trial" : "Create Account"}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <Suspense fallback={<div className="w-5 h-5 ml-2" />}>
+                  <Icons.ArrowRight className="w-5 h-5 ml-2" />
+                </Suspense>
               </Button>
 
               <p className="text-sm text-gray-400">
@@ -450,7 +541,9 @@ export default function Index() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <BadgePoundSterling className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.BadgePoundSterling className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">10-30% Below Market Value</h3>
               <p className="text-gray-400">Repossessions offer some of the best discounts on the market</p>
@@ -458,7 +551,9 @@ export default function Index() {
             
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <User className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.User className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">User Friendly</h3>
               <p className="text-gray-400">Considerable time, cost and stress savings</p>
@@ -466,7 +561,9 @@ export default function Index() {
 
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <PlusCircle className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.PlusCircle className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">New Properties Everyday</h3>
               <p className="text-gray-400">New repossessed properties added everyday</p>
@@ -474,7 +571,9 @@ export default function Index() {
 
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.Clock className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">Realtime Search</h3>
               <p className="text-gray-400">Our platform is updated every day to give you the latest market and property data</p>
@@ -482,7 +581,9 @@ export default function Index() {
 
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.BarChart3 className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">Investment Opportunity</h3>
               <p className="text-gray-400">Other exclusive investment opportunities from our valued partners</p>
@@ -490,7 +591,9 @@ export default function Index() {
 
             <div className="p-6 rounded-lg">
               <div className="w-12 h-12 bg-[#9b87f5] rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-white" />
+                <Suspense fallback={<div className="w-6 h-6" />}>
+                  <Icons.FileText className="w-6 h-6 text-white" />
+                </Suspense>
               </div>
               <h3 className="text-lg md:text-xl font-semibold mb-3">Property Valuation Guide</h3>
               <p className="text-gray-400">Helping you to keep you one step ahead in a competitive market</p>
